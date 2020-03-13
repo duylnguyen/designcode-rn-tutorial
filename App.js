@@ -16,7 +16,7 @@ export default function App() {
           <TitleBar>
             <Avatar source={require("./assets/avatar.jpg")} />
             <Title>Welcome back,</Title>
-            <Name>Duy</Name>
+            <Name>Meng To</Name>
             <NotificationIcon
               style={{ position: "absolute", right: 20, top: 5 }}
             />
