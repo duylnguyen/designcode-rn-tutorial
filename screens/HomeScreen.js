@@ -4,7 +4,8 @@ import {
   SafeAreaView,
   TouchableOpacity,
   Animated,
-  Easing
+  Easing,
+  StatusBar
 } from "react-native";
 import styled from "styled-components";
 import Card from "../components/Card";
@@ -13,9 +14,10 @@ import Logo from "../components/Logo";
 import Course from "../components/Course";
 import Menu from "../components/Menu";
 import { connect } from "react-redux";
+import Avatar from "../components/Avatar";
 
 function mapStateToProps(state) {
-  return { action: state.action };
+  return { action: state.action, name: state.name };
 }
 
 function mapDispatchToProps(dispatch) {
@@ -33,27 +35,39 @@ class HomeScreen extends React.Component {
     opacity: new Animated.Value(1)
   };
 
+  componentDidMount() {
+    StatusBar.setBarStyle("dark-content", true);
+  }
+
   componentDidUpdate() {
     this.handleToggleMenu();
   }
 
   handleToggleMenu = () => {
     if (this.props.action == "openMenu") {
-      Animated.spring(this.state.scale, {
-        toValue: 0.9
+      Animated.timing(this.state.scale, {
+        toValue: 0.9,
+        duration: 300,
+        easing: Easing.in()
       }).start();
       Animated.spring(this.state.opacity, {
         toValue: 0.5
       }).start();
+
+      StatusBar.setBarStyle("light-content", true);
     }
 
     if (this.props.action == "closeMenu") {
-      Animated.spring(this.state.scale, {
-        toValue: 1
+      Animated.timing(this.state.scale, {
+        toValue: 1,
+        duration: 300,
+        easing: Easing.in()
       }).start();
       Animated.spring(this.state.opacity, {
         toValue: 1
       }).start();
+
+      StatusBar.setBarStyle("dark-content", true);
     }
   };
 
@@ -74,10 +88,10 @@ class HomeScreen extends React.Component {
                   onPress={this.props.openMenu}
                   style={{ position: "absolute", top: 0, left: 20 }}
                 >
-                  <Avatar source={require("../assets/avatar.jpg")} />
+                  <Avatar />
                 </TouchableOpacity>
                 <Title>Welcome back,</Title>
-                <Name>Meng To</Name>
+                <Name>{this.props.name}</Name>
                 <NotificationIcon
                   style={{ position: "absolute", right: 20, top: 5 }}
                 />
@@ -174,13 +188,6 @@ const TitleBar = styled.View`
   width: 100%;
   margin-top: 50px;
   padding-left: 80px;
-`;
-
-const Avatar = styled.Image`
-  width: 44px;
-  height: 44px;
-  background: black;
-  border-radius: 22px;
 `;
 
 const logos = [
