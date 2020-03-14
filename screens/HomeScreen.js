@@ -1,5 +1,11 @@
 import React from "react";
-import { ScrollView, SafeAreaView, TouchableOpacity } from "react-native";
+import {
+  ScrollView,
+  SafeAreaView,
+  TouchableOpacity,
+  Animated,
+  Easing
+} from "react-native";
 import styled from "styled-components";
 import Card from "../components/Card";
 import { NotificationIcon } from "../components/Icons";
@@ -22,74 +28,118 @@ function mapDispatchToProps(dispatch) {
 }
 
 class HomeScreen extends React.Component {
+  state = {
+    scale: new Animated.Value(1),
+    opacity: new Animated.Value(1)
+  };
+
+  componentDidUpdate() {
+    this.handleToggleMenu();
+  }
+
+  handleToggleMenu = () => {
+    if (this.props.action == "openMenu") {
+      Animated.spring(this.state.scale, {
+        toValue: 0.9
+      }).start();
+      Animated.spring(this.state.opacity, {
+        toValue: 0.5
+      }).start();
+    }
+
+    if (this.props.action == "closeMenu") {
+      Animated.spring(this.state.scale, {
+        toValue: 1
+      }).start();
+      Animated.spring(this.state.opacity, {
+        toValue: 1
+      }).start();
+    }
+  };
+
   render() {
     return (
-      <Container>
+      <RootView>
         <Menu />
-        <SafeAreaView>
-          <ScrollView>
-            <TitleBar>
-              <TouchableOpacity onPress={this.props.openMenu}>
-                <Avatar source={require("../assets/avatar.jpg")} />
-              </TouchableOpacity>
-              <Title>Welcome back,</Title>
-              <Name>Meng To</Name>
-              <NotificationIcon
-                style={{ position: "absolute", right: 20, top: 5 }}
-              />
-            </TitleBar>
-            <ScrollView
-              style={{
-                flexDirection: "row",
-                padding: 20,
-                paddingLeft: 12,
-                paddingTop: 30
-              }}
-              horizontal={true}
-              showsHorizontalScrollIndicator={false}
-            >
-              {logos.map((logo, index) => (
-                <Logo key={index} image={logo.image} text={logo.text} />
-              ))}
-            </ScrollView>
-            <Subtitle>Continue Learning</Subtitle>
-            <ScrollView
-              horizontal={true}
-              style={{ paddingBottom: 30 }}
-              showsHorizontalScrollIndicator={false}
-            >
-              {cards.map((card, index) => (
-                <Card
+        <AnimatedContainer
+          style={{
+            transform: [{ scale: this.state.scale }],
+            opacity: this.state.opacity
+          }}
+        >
+          <SafeAreaView>
+            <ScrollView>
+              <TitleBar>
+                <TouchableOpacity
+                  onPress={this.props.openMenu}
+                  style={{ position: "absolute", top: 0, left: 20 }}
+                >
+                  <Avatar source={require("../assets/avatar.jpg")} />
+                </TouchableOpacity>
+                <Title>Welcome back,</Title>
+                <Name>Meng To</Name>
+                <NotificationIcon
+                  style={{ position: "absolute", right: 20, top: 5 }}
+                />
+              </TitleBar>
+              <ScrollView
+                style={{
+                  flexDirection: "row",
+                  padding: 20,
+                  paddingLeft: 12,
+                  paddingTop: 30
+                }}
+                horizontal={true}
+                showsHorizontalScrollIndicator={false}
+              >
+                {logos.map((logo, index) => (
+                  <Logo key={index} image={logo.image} text={logo.text} />
+                ))}
+              </ScrollView>
+              <Subtitle>Continue Learning</Subtitle>
+              <ScrollView
+                horizontal={true}
+                style={{ paddingBottom: 30 }}
+                showsHorizontalScrollIndicator={false}
+              >
+                {cards.map((card, index) => (
+                  <Card
+                    key={index}
+                    title={card.title}
+                    image={card.image}
+                    caption={card.caption}
+                    logo={card.logo}
+                    subtitle={card.subtitle}
+                  />
+                ))}
+              </ScrollView>
+              <Subtitle>Popular Course</Subtitle>
+              {courses.map((course, index) => (
+                <Course
                   key={index}
-                  title={card.title}
-                  image={card.image}
-                  caption={card.caption}
-                  logo={card.logo}
-                  subtitle={card.subtitle}
+                  image={course.image}
+                  title={course.title}
+                  subtitle={course.subtitle}
+                  logo={course.logo}
+                  author={course.author}
+                  avatar={course.avatar}
+                  caption={course.caption}
                 />
               ))}
             </ScrollView>
-            <Subtitle>Popular Course</Subtitle>
-            {courses.map((course, index) => (
-              <Course
-                key={index}
-                image={course.image}
-                title={course.title}
-                subtitle={course.subtitle}
-                logo={course.logo}
-                author={course.author}
-                avatar={course.avatar}
-                caption={course.caption}
-              />
-            ))}
-          </ScrollView>
-        </SafeAreaView>
-      </Container>
+          </SafeAreaView>
+        </AnimatedContainer>
+      </RootView>
     );
   }
 }
 
 export default connect(mapStateToProps, mapDispatchToProps)(HomeScreen);
+
+const RootView = styled.View`
+  background: black;
+  flex: 1;
+`;
 
 const Subtitle = styled.Text`
   color: #b8bece;
@@ -103,7 +153,10 @@ const Subtitle = styled.Text`
 const Container = styled.View`
   flex: 1;
   background-color: #f0f3f5;
+  border-radius: 10px;
 `;
+
+const AnimatedContainer = Animated.createAnimatedComponent(Container);
 
 const Title = styled.Text`
   font-size: 16px;
