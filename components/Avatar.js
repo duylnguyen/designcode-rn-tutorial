@@ -27,8 +27,6 @@ class Avatar extends React.Component {
     fetch("https://uinames.com/api/?ext")
       .then(respone => respone.json())
       .then(respone => {
-        console.log(respone);
-
         this.setState({
           photo: respone.photo
         });
