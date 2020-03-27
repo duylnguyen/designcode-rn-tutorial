@@ -9,6 +9,7 @@ import {
 import { BlurView } from "expo-blur";
 import { Alert, Dimensions } from "react-native";
 import { connect } from "react-redux";
+import firebase from "./Firebase";
 
 const screenHeight = Dimensions.get("window").height;
 
@@ -62,13 +63,26 @@ class ModalLogin extends React.Component {
   }
 
   handleLogin = () => {
-    console.log(this.state.email, this.state.password);
+    const email = this.state.email;
+    const password = this.state.password;
 
-    Alert.alert("Congrats", "You've logged successfully!");
+    firebase
+      .auth()
+      .signInWithEmailAndPassword(email, password)
+      .catch(function(error) {
+        Alert.alert("Error", error.message);
+      })
+      .then(respone => {
+        console.log(respone);
 
-    setTimeout(() => {
-      this.props.closeLogin();
-    }, 1000);
+        if (respone) {
+          Alert.alert("Congrats", "You've logged successfully!");
+
+          setTimeout(() => {
+            this.props.closeLogin();
+          }, 1000);
+        }
+      });
   };
 
   focusEmail = () => {
