@@ -15,7 +15,8 @@ const client = new ApolloClient({
 
 const initialState = {
   action: "",
-  name: ""
+  name: "Stranger",
+  avatar: "https://tva1.sinaimg.cn/large/00831rSTgy1gctzvkofjej303o03o741.jpg"
 };
 
 const reducer = (state = initialState, action) => {
@@ -26,6 +27,8 @@ const reducer = (state = initialState, action) => {
       return { ...state, action: "closeMenu" };
     case "UPDATE_NAME":
       return { ...state, name: action.name };
+    case "UPDATE_AVATAR":
+      return { ...state, avatar: action.avatar };
     case "OPEN_CARD":
       return { ...state, action: "openCard" };
     case "CLOSE_CARD":
@@ -34,6 +37,10 @@ const reducer = (state = initialState, action) => {
       return { ...state, action: "openLogin" };
     case "CLOSE_LOGIN":
       return { ...state, action: "closeLogin" };
+    case "OPEN_NOTIF":
+      return { ...state, action: "openNotif" };
+    case "CLOSE_NOTIF":
+      return { ...state, action: "closeNotif" };
     default:
       return state;
   }
