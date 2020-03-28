@@ -10,6 +10,7 @@ import { BlurView } from "expo-blur";
 import { Alert, Dimensions } from "react-native";
 import { connect } from "react-redux";
 import firebase from "./Firebase";
+import { AsyncStorage } from "react-native";
 
 const screenHeight = Dimensions.get("window").height;
 
@@ -22,6 +23,11 @@ function mapDispatchToProps(dispatch) {
     closeLogin: () =>
       dispatch({
         type: "CLOSE_LOGIN"
+      }),
+    updateName: name =>
+      dispatch({
+        type: "UPDATE_NAME",
+        name
       })
   };
 }
@@ -36,6 +42,10 @@ class ModalLogin extends React.Component {
     scale: new Animated.Value(1.3),
     translateY: new Animated.Value(0)
   };
+
+  componentDidMount() {
+    this.retrieveName();
+  }
 
   componentDidUpdate() {
     if (this.props.action === "openLogin") {
@@ -62,7 +72,25 @@ class ModalLogin extends React.Component {
     }
   }
 
+  storeName = async name => {
+    try {
+      await AsyncStorage.setItem("name", name);
+    } catch (error) {}
+  };
+
+  retrieveName = async () => {
+    try {
+      const name = await AsyncStorage.getItem("name");
+      if (name !== null) {
+        console.log(name);
+        this.props.updateName(name);
+      }
+    } catch (error) {}
+  };
+
   handleLogin = () => {
+    // console.log(this.state.email, this.state.password);
+
     const email = this.state.email;
     const password = this.state.password;
 
@@ -73,10 +101,13 @@ class ModalLogin extends React.Component {
         Alert.alert("Error", error.message);
       })
       .then(respone => {
-        console.log(respone);
+        // console.log(respone);
 
         if (respone) {
           Alert.alert("Congrats", "You've logged successfully!");
+
+          this.storeName(respone.user.email);
+          this.props.updateName(respone.user.email);
 
           setTimeout(() => {
             this.props.closeLogin();
